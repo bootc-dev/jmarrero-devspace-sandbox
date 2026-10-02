@@ -13,7 +13,7 @@ use std::thread;
 use std::time::{Duration, Instant};
 use xshell::{Shell, cmd};
 
-const REPO: &str = "bootc-dev/cgwalters-devspace-sandbox";
+const REPO: &str = "bootc-dev/jmarrero-devspace-sandbox";
 const WORKFLOW: &str = "devspace.yml";
 const WORKFLOW_NAME: &str = "Development runner";
 const WAIT: Duration = Duration::from_secs(180);
@@ -349,7 +349,7 @@ fn find_run<'a>(session: &str, since: DateTime<Utc>, runs: &'a [Run]) -> Option<
     matches.next().is_none().then_some(first)
 }
 fn hostname(id: u64) -> String {
-    format!("cgwalters-devspace-{id}")
+    format!("jmarrero-devspace-{id}")
 }
 fn is_managed(details: &Details) -> bool {
     details.workflow_name == WORKFLOW_NAME
@@ -744,7 +744,7 @@ mod tests {
             )
             .is_none()
         );
-        assert_eq!(hostname(2), "cgwalters-devspace-2");
+        assert_eq!(hostname(2), "jmarrero-devspace-2");
     }
     #[test]
     fn session_titles() {
@@ -832,7 +832,7 @@ mod tests {
         let argv = ssh_command(&key, &dir.join("known hosts"), &hostname(7));
         assert!(argv.contains(&"StrictHostKeyChecking=accept-new".into()));
         assert!(argv.contains(&"IdentitiesOnly=yes".into()));
-        assert_eq!(argv.last().unwrap(), "runner@cgwalters-devspace-7");
+        assert_eq!(argv.last().unwrap(), "runner@jmarrero-devspace-7");
         let probe = ssh_probe_command(&key, &dir.join("known hosts"), &hostname(7));
         assert!(probe.contains(&"BatchMode=yes".into()));
         assert!(probe.contains(&"ConnectTimeout=8".into()));
@@ -1036,29 +1036,13 @@ mod tests {
         );
     }
     #[test]
-    fn justfile_pins_homegit_with_renovate_annotation() {
+    fn justfile_init_sets_umask() {
         let justfile = fs::read_to_string("Justfile").unwrap();
-        let annotation = "# renovate: datasource=git-refs depName=https://github.com/cgwalters-bot/homegit branch=main";
-        let mut lines = justfile.lines().skip_while(|line| *line != annotation);
-        assert!(lines.next().is_some(), "Justfile is missing {annotation:?}");
-        let rev_line = lines.next().unwrap();
-        let rev = rev_line
-            .strip_prefix("homegit_rev := \"")
-            .and_then(|rest| rest.strip_suffix('"'))
-            .unwrap_or_else(|| panic!("unexpected homegit_rev line {rev_line:?}"));
-        assert!(
-            rev.len() == 40 && rev.chars().all(|c| matches!(c, '0'..='9' | 'a'..='f')),
-            "homegit_rev must be a full commit SHA, got {rev:?}"
-        );
-        // The runner's umask is 000; dotfiles must not be installed world-writable.
-        let umask = justfile
-            .find("    umask 022\n")
-            .expect("init must set umask 022");
-        assert!(umask < justfile.find("git clone").unwrap());
-        assert!(umask < justfile.find("make -C \"$homegit\" install").unwrap());
+        // The runner's umask is 000; init must not leave files world-writable.
+        assert!(justfile.contains("    umask 022\n"), "init must set umask 022");
     }
     #[test]
-    fn workflow_initializes_homegit_before_openssh() {
+    fn workflow_initializes_runner_before_openssh() {
         let workflow: serde_yaml::Value =
             serde_yaml::from_str(&fs::read_to_string(".github/workflows/devspace.yml").unwrap())
                 .unwrap();

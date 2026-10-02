@@ -1,4 +1,4 @@
-# cgwalters-devspace
+# jmarrero-devspace
 
 This repository dispatches a bounded, disposable RHEL 10 development runner.
 Tailscale supplies private networking inside the remote workflow; access is
@@ -36,7 +36,7 @@ cargo devspace stop RUN_ID
 it is a nonempty absolute path), dispatches the workflow, and
 prints the exact run ID and URL. It does not wait for readiness or cancel the
 runner. `ssh` repeatedly probes the deterministic MagicDNS hostname
-`cgwalters-devspace-RUN_ID` while the workflow is active, then opens interactive
+`jmarrero-devspace-RUN_ID` while the workflow is active, then opens interactive
 OpenSSH with that key. `stop` acts only on the given development run and removes
 its local key after cancellation or after confirming that the run has already
 completed. `list` shows active dispatched-run metadata: run ID, status, title,
@@ -55,15 +55,12 @@ The workflow runs stock `sshd.service`, binds it only to the Tailscale IPv4
 address, and enforces a public-key-only configuration. Its keepalive verifies
 the service, SELinux context, and bound address every five seconds.
 
-The runner hosts [cgwalters-bot](https://github.com/cgwalters-bot) agent
-sessions. Before OpenSSH is made available, it automatically installs the bot's
-[homegit](https://github.com/cgwalters-bot/homegit) dotfiles, skills, and agent
-configuration. Because the runner executes homegit code, it is pinned to the
-commit in the `Justfile`'s `homegit_rev`, which Renovate bumps through
-reviewed pull requests. The checkout is created at
-`$HOME/src/github/cgwalters-bot/homegit` when absent, and existing checkouts
-are moved to the pinned commit, fetching it if needed. Interactive users on the
-runner therefore get the bot's git identity from its `.gitconfig`.
+The runner hosts [jmarrero-bot](https://github.com/jmarrero-bot) agent
+sessions. It is a copy of
+[bootc-dev/cgwalters-devspace-sandbox](https://github.com/bootc-dev/cgwalters-devspace-sandbox),
+kept close to it so its changes merge easily. Unlike the original it installs
+no bot dotfiles yet: `just init` only fixes the permissions of the runner
+user's dotfiles.
 
 The opencode and Claude Code agent CLIs are preinstalled globally with npm
 (from the RHEL `nodejs` package). Their exact versions are pinned in `npm.txt`,

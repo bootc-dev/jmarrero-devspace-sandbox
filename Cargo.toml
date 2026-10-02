@@ -5,7 +5,7 @@ edition = "2024"
 rust-version = "1.85"
 license = "MIT OR Apache-2.0"
 description = "Manage disposable development runners"
-repository = "https://github.com/bootc-dev/cgwalters-devspace-sandbox"
+repository = "https://github.com/bootc-dev/jmarrero-devspace-sandbox"
 publish = false
 
 [[bin]]

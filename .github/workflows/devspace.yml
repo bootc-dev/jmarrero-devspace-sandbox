@@ -1,5 +1,5 @@
 name: Development runner
-# bot-devspace (in cgwalters-bot/homegit) finds its runs by this title, and
+# bot-devspace finds its runs by this title, and
 # the review app reads the size and duration from it.
 run-name: "Devspace ${{ inputs.session_name || github.run_id }} (${{ inputs.cores }}c, ${{ inputs.duration }}m)"
 
@@ -64,7 +64,7 @@ jobs:
           oauth-client-id: ${{ vars.TS_OAUTH_CLIENT_ID }}
           audience: ${{ vars.TS_AUDIENCE }}
           tags: tag:bootc-dev-sandbox
-          hostname: cgwalters-devspace-${{ github.run_id }}
+          hostname: jmarrero-devspace-${{ github.run_id }}
 
       - name: Install development prerequisites
         shell: bash
