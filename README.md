@@ -14,7 +14,7 @@ available.
 
 An administrator must configure repository variables `TS_OAUTH_CLIENT_ID` and
 `TS_AUDIENCE`. The federated Tailscale identity needs writable `auth_keys`, the
-`tag:bootc-dev-sandbox` tag, and network ACL access from your device to that tag
+`tag:jmarrero-devspace` tag, and network ACL access from your device to that tag
 on TCP port 22. No repository secret or OAuth client secret is used.
 The client must be connected to the relevant Tailscale network with MagicDNS
 access. The Rust tool uses ordinary OpenSSH and does not invoke the local
