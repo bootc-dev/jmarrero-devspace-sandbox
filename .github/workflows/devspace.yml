@@ -47,6 +47,13 @@ jobs:
         run: |
           set -euo pipefail
           sudo dnf install -y iptables openssh-server
+          # The RHEL 10 image of 2026-11-18 ships openssh-server already at the
+          # version dnf would install, with sshd's privilege separation directory
+          # owned or moded wrong; sshd -t refuses to start until it's fixed.
+          stat -c '%U:%G %a' /usr/share/empty.sshd
+          sudo chown root:root /usr/share/empty.sshd
+          sudo chmod 0711 /usr/share/empty.sshd
+          sudo restorecon -RF /usr/share/empty.sshd
           sudo ln -sfn /usr/local/bin/tailscale /usr/bin/tailscale
           sudo ln -sfn /usr/local/bin/tailscaled /usr/bin/tailscaled
           sudo systemctl stop sshd.service
